@@ -18,45 +18,38 @@ import org.springframework.web.bind.annotation.RestController;
 public class VCardController {
 
     @GetMapping("/vCard/{profession}")
-    public String getData(@PathVariable("profession") String profession) throws IOException {
-
+    public String generateWebsite(@PathVariable("profession") String profession) throws IOException {
         List<Business> businesses = getBusinesses(profession);
-
         StringBuilder page = new StringBuilder();
-        page.append("<html><header><title>VCard</title></header><body>");
-
+        page.append("<html><header><title>Website</title></header><body>");
         page.append("<table><tr>");
         page.append("<th>Nazwa</th>");
         page.append("<th>Numer telefonu</th>");
         page.append("<th>Email</th>");
         page.append("<th>Adres</th>");
         page.append("<th>Operacja</th></tr>");
+
         businesses.forEach(business -> {
             page.append("<tr>");
             page.append("<td>").append(business.getName()).append("</td>");
             page.append("<td>").append(business.getTelephone()).append("</td>");
             page.append("<td>").append(business.getEmail()).append("</td>");
             page.append("<td>").append(business.getStreetAddress()).append(", ")
-                .append(business.getPostalCode()).append(" ").append(business.getCity())
-                .append("</td>");
-            page.append(
-                    "<td><button onclick=\"location.href='http://localhost:8080/vCard/generate/")
+                .append(business.getPostalCode()).append(" ").append(business.getCity()).append("</td>");
+            page.append("<td><button onclick=\"location.href='http://localhost:8080/vCard/generate/")
                 .append(profession).append("/").append(business.getEmail())
-                .append("'\" type=\"button\">wygeneruj vCard</button>")
-                .append("</td>");
+                .append("'\" type=\"button\">wygeneruj vCard</button>").append("</td>");
             page.append("</tr>");
         });
+
         page.append("</table></body></html>");
-
         saveFile("index.html", page);
-
         return page.toString();
     }
 
     @GetMapping("/vCard/generate/{profession}/{email}")
     public String generateVCard(@PathVariable("profession") String profession,
-        @PathVariable("email") String email)
-        throws IOException {
+        @PathVariable("email") String email) throws IOException {
         Business business = getBusinesses(profession).stream()
             .filter(b -> b.getEmail().equals(email))
             .findFirst()
@@ -73,6 +66,7 @@ public class VCardController {
 
         String path = "vCards/vcard_" + business.getName().replaceAll(" ", "_") + ".vcf";
         saveFile(path, vCard);
+
         return vCard.toString();
     }
 
