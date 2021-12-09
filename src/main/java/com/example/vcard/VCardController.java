@@ -17,6 +17,58 @@ public class VCardController {
     @GetMapping("/vCard/{profession}")
     public String getData(@PathVariable("profession") String profession) throws IOException {
 
+        List<Business> businesses = getBusinesses(profession);
+
+        StringBuilder page = new StringBuilder();
+        page.append("<html><header><title>VCard</title></header><body>");
+
+        page.append("<table><tr>");
+        page.append("<th>Nazwa</th>");
+        page.append("<th>Numer telefonu</th>");
+        page.append("<th>Email</th>");
+        page.append("<th>Adres</th>");
+        page.append("<th>Operacja</th></tr>");
+        businesses.forEach(business -> {
+            page.append("<tr>");
+            page.append("<td>").append(business.getName()).append("</td>");
+            page.append("<td>").append(business.getTelephone()).append("</td>");
+            page.append("<td>").append(business.getEmail()).append("</td>");
+            page.append("<td>").append(business.getStreetAddress()).append(", ")
+                .append(business.getPostalCode()).append(business.getCity()).append("</td>");
+            page.append(
+                    "<td><button onclick=\"location.href='http://localhost:8080/vCard/generate/")
+                .append(profession).append("/").append(business.getEmail())
+                .append("'\" type=\"button\">wygeneruj vCard</button>")
+                .append("</td>");
+            page.append("</tr>");
+        });
+        page.append("</body></html>");
+        return page.toString();
+    }
+
+    @GetMapping("/vCard/generate/{profession}/{email}")
+    public String generateVCard(@PathVariable("profession") String profession, @PathVariable("email") String email)
+        throws IOException {
+        Business business = getBusinesses(profession).stream()
+            .filter(b -> b.getEmail().equals(email))
+            .findFirst()
+            .get();
+
+        StringBuilder vCard = new StringBuilder("BEGIN:VCARD\r\n");
+        vCard.append("<html><header><title>VCard</title></header><body>");
+        vCard.append("VERSION:4.0\r\n");
+        vCard.append("ORG:").append(business.getName()).append("\r\n");
+        vCard.append("TEL:").append(business.getTelephone()).append("\r\n");
+        vCard.append("ADR:").append(business.getStreetAddress()).append(", ")
+            .append(business.getPostalCode()).append(business.getCity()).append("\r\n");
+        vCard.append("EMAIL:").append(business.getEmail()).append("\r\n");
+        vCard.append("END:VCARD\n");
+        vCard.append("</body></html>");
+
+        return vCard.toString();
+    }
+
+    private List<Business> getBusinesses(String profession) throws IOException {
         String url = String.format("https://panoramafirm.pl/szukaj=%s", profession);
         Document document = Jsoup.connect(url).get();
         List<Business> businesses = new ArrayList<>();
@@ -35,26 +87,7 @@ public class VCardController {
                 }
             }
         }
-
-        StringBuilder page = new StringBuilder();
-        page.append("<html><header><title>VCard</title></header><body>");
-
-        page.append("<table><tr>");
-        page.append("<th>Nazwa</th>");
-        page.append("<th>Numer telefonu</th>");
-        page.append("<th>Email</th>");
-        page.append("<th>Adres</th></tr>");
-        businesses.forEach(business -> {
-            page.append("<tr>");
-            page.append("<td>").append(business.getName()).append("</td>");
-            page.append("<td>").append(business.getTelephone()).append("</td>");
-            page.append("<td>").append(business.getEmail()).append("</td>");
-            page.append("<td>").append(business.getStreetAddress()).append(", ")
-                .append(business.getPostalCode()).append(business.getCity()).append("</td>");
-            page.append("</tr>");
-        });
-        page.append("</body></html>");
-        return page.toString();
+        return businesses;
     }
 
     private String getField(String json, String field) {
