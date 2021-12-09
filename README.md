@@ -8,11 +8,24 @@ Params:
  {profession} - search profession   
 Return: website with found results for passed profession
 
+Example:   
+http://localhost:8080/vCard/hydraulik   
 
-## GET /vCard/generate/{business-email}  
+Response:   
+[example generated website](https://piotrkupis.github.io/PPKWU-Lab5/)
+
+
+## GET /vCard/generate/{profession}/{business-email}/  
 Description: endpoint responsible for generating vCard for business with passed email.    
 
-Path: /vCard/generate/{business-email}  (GET)  
+Path: /vCard/generate/{profession}/{business-email}  (GET)  
 Params:   
+ {profession} - search profession  
  {business-email} - email of specific business     
-Return: status OK
+Return: vCard of specific business  
+
+Example:   
+http://localhost:8080/vCard/generate//hydraulik/biuro@transpol.czest.pl   
+
+Response:   
+[example vCard](https://github.com/PiotrKupis/PPKWU-Lab5/blob/main/vCards/vcard_Transpol_Roboty_ziemne_Rafa%C5%82_Michnicki.vcf)
