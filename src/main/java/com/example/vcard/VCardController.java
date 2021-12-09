@@ -1,6 +1,9 @@
 package com.example.vcard;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import org.jsoup.Jsoup;
@@ -34,7 +37,7 @@ public class VCardController {
             page.append("<td>").append(business.getTelephone()).append("</td>");
             page.append("<td>").append(business.getEmail()).append("</td>");
             page.append("<td>").append(business.getStreetAddress()).append(", ")
-                .append(business.getPostalCode()).append(business.getCity()).append("</td>");
+                .append(business.getPostalCode()).append(" ").append(business.getCity()).append("</td>");
             page.append(
                     "<td><button onclick=\"location.href='http://localhost:8080/vCard/generate/")
                 .append(profession).append("/").append(business.getEmail())
@@ -55,15 +58,17 @@ public class VCardController {
             .get();
 
         StringBuilder vCard = new StringBuilder("BEGIN:VCARD\r\n");
-        vCard.append("<html><header><title>VCard</title></header><body>");
         vCard.append("VERSION:4.0\r\n");
         vCard.append("ORG:").append(business.getName()).append("\r\n");
         vCard.append("TEL:").append(business.getTelephone()).append("\r\n");
         vCard.append("ADR:").append(business.getStreetAddress()).append(", ")
-            .append(business.getPostalCode()).append(business.getCity()).append("\r\n");
+            .append(business.getPostalCode()).append(" ").append(business.getCity()).append("\r\n");
         vCard.append("EMAIL:").append(business.getEmail()).append("\r\n");
         vCard.append("END:VCARD\n");
-        vCard.append("</body></html>");
+
+        File file = new File("vCards/vcard_" + business.getName().replaceAll(" ","_")+ ".vcf");
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        fileOutputStream.write(vCard.toString().getBytes(StandardCharsets.UTF_8));
 
         return vCard.toString();
     }
