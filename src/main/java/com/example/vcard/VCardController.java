@@ -18,9 +18,7 @@ public class VCardController {
     public String getData(@PathVariable("profession") String profession) throws IOException {
 
         String url = String.format("https://panoramafirm.pl/szukaj=%s", profession);
-        System.out.println(url);
         Document document = Jsoup.connect(url).get();
-
         List<Business> businesses = new ArrayList<>();
         Elements elements = document.select("script");
         for (Element element : elements) {
@@ -38,8 +36,6 @@ public class VCardController {
             }
         }
 
-        businesses.forEach(System.out::println);
-
         StringBuilder page = new StringBuilder();
         page.append("<html><header><title>VCard</title></header><body>");
 
@@ -47,10 +43,17 @@ public class VCardController {
         page.append("<th>Nazwa</th>");
         page.append("<th>Numer telefonu</th>");
         page.append("<th>Email</th>");
-        page.append("<th>Adres</th>");
-
+        page.append("<th>Adres</th></tr>");
+        businesses.forEach(business -> {
+            page.append("<tr>");
+            page.append("<td>").append(business.getName()).append("</td>");
+            page.append("<td>").append(business.getTelephone()).append("</td>");
+            page.append("<td>").append(business.getEmail()).append("</td>");
+            page.append("<td>").append(business.getStreetAddress()).append(", ")
+                .append(business.getPostalCode()).append(business.getCity()).append("</td>");
+            page.append("</tr>");
+        });
         page.append("</body></html>");
-
         return page.toString();
     }
 
