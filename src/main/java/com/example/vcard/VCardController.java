@@ -46,7 +46,7 @@ public class VCardController {
                 .append("</td>");
             page.append("</tr>");
         });
-        page.append("</body></html>");
+        page.append("</table></body></html>");
 
         saveFile("index.html", page);
 
