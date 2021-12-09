@@ -25,7 +25,7 @@ Params:
 Return: vCard of specific business  
 
 Example:   
-/vCard/generate//hydraulik/biuro@transpol.czest.pl   
+/vCard/generate/hydraulik/biuro@transpol.czest.pl   
 
 Response:   
 [example vCard](https://github.com/PiotrKupis/PPKWU-Lab5/blob/main/vCards/vcard_Transpol_Roboty_ziemne_Rafa%C5%82_Michnicki.vcf)
