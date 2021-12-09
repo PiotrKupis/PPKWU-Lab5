@@ -37,7 +37,8 @@ public class VCardController {
             page.append("<td>").append(business.getTelephone()).append("</td>");
             page.append("<td>").append(business.getEmail()).append("</td>");
             page.append("<td>").append(business.getStreetAddress()).append(", ")
-                .append(business.getPostalCode()).append(" ").append(business.getCity()).append("</td>");
+                .append(business.getPostalCode()).append(" ").append(business.getCity())
+                .append("</td>");
             page.append(
                     "<td><button onclick=\"location.href='http://localhost:8080/vCard/generate/")
                 .append(profession).append("/").append(business.getEmail())
@@ -46,11 +47,15 @@ public class VCardController {
             page.append("</tr>");
         });
         page.append("</body></html>");
+
+        saveFile("index.html", page);
+
         return page.toString();
     }
 
     @GetMapping("/vCard/generate/{profession}/{email}")
-    public String generateVCard(@PathVariable("profession") String profession, @PathVariable("email") String email)
+    public String generateVCard(@PathVariable("profession") String profession,
+        @PathVariable("email") String email)
         throws IOException {
         Business business = getBusinesses(profession).stream()
             .filter(b -> b.getEmail().equals(email))
@@ -66,11 +71,15 @@ public class VCardController {
         vCard.append("EMAIL:").append(business.getEmail()).append("\r\n");
         vCard.append("END:VCARD\n");
 
-        File file = new File("vCards/vcard_" + business.getName().replaceAll(" ","_")+ ".vcf");
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        fileOutputStream.write(vCard.toString().getBytes(StandardCharsets.UTF_8));
-
+        String path = "vCards/vcard_" + business.getName().replaceAll(" ", "_") + ".vcf";
+        saveFile(path, vCard);
         return vCard.toString();
+    }
+
+    private void saveFile(String path, StringBuilder text) throws IOException {
+        File file = new File(path);
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        fileOutputStream.write(text.toString().getBytes(StandardCharsets.UTF_8));
     }
 
     private List<Business> getBusinesses(String profession) throws IOException {
